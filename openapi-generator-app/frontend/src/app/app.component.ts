@@ -17,8 +17,8 @@ export class AppComponent {
   selectedFile: File | null = null;
   selectedFileName: string = '';
   generatorName: string = 'typescript-angular';
-  outputDir: string = './actuator-client';
-  downloadFileName: string = 'codigo-generado.zip';
+  outputDir: string = './dynamic-api-client';
+  downloadFileName: string = 'dynamic-api-client.zip';
   additionalProperties: string = '';
 
   generatedCode: string | null = null;
@@ -53,16 +53,16 @@ export class AppComponent {
   private updatePropertiesForGenerator() {
     switch (this.generatorName) {
       case 'typescript-angular':
-        this.outputDir = './actuator-client';
-        this.downloadFileName = 'cliente-angular.zip';
+        this.outputDir = './dynamic-api-client';
+        this.downloadFileName = 'dynamic-api-client.zip';
         this.additionalProperties =
-          'ngVersion=20.0.0,npmName=@tsir/actuator-api,npmVersion=1.0.0,providedInRoot=true,apiModulePrefix=Tsir,modelSuffix=DTO,withCredentials=true,stringEnums=true';
+          'ngVersion=20.0.0,npmName=dynamic-api-client,npmVersion=1.0.0,providedIn=root,withInterfaces=true,modelPropertyNaming=camelCase,stringEnums=true,supportsES6=true,serviceSuffix=Service,serviceFileSuffix=.service,skipFormModel=true';
         break;
       case 'spring':
         this.outputDir = './servidor-spring';
         this.downloadFileName = 'servidor-spring.zip';
         this.additionalProperties =
-          'packageName=com.tsir.api,groupId=com.tsir,artifactId=actuator-api,packageVersion=1.0.0,basePackage=com.tsir.api';
+          'packageName=com.dynamic.api,groupId=com.dynamic,artifactId=dynamic-api,packageVersion=1.0.0,basePackage=com.dynamic.api';
         break;
       default:
         this.outputDir = './codigo-generado';

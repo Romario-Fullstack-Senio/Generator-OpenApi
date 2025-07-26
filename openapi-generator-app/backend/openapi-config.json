@@ -1,0 +1,41 @@
+{
+  "generatorName": "typescript-angular",
+  "inputSpec": "uploads/dynamic-api.yaml",
+  "outputDir": "./dynamic-api-client",
+  "additionalProperties": {
+    "modelNameSuffix": "",
+    "modelNamePrefix": "",
+    "removeOperationIdPrefix": true,
+    "stringEnums": true,
+    "supportsES6": true,
+    "withInterfaces": true,
+    "useSingleRequestParameter": false,
+    "modelPropertyNaming": "camelCase",
+    "enumPropertyNaming": "camelCase",
+    "paramNaming": "camelCase",
+    "skipFormModel": true,
+    "disallowAdditionalPropertiesIfNotPresent": false,
+    "sortParamsByRequiredFlag": true,
+    "sortModelPropertiesByRequiredFlag": true,
+    "ensureUniqueParams": true,
+    "serviceSuffix": "Service",
+    "serviceFileSuffix": ".service",
+    "providedIn": "root",
+    "prependFormOrBodyParameters": false,
+    "legacyDiscriminatorBehavior": false,
+    "npmName": "dynamic-api-client",
+    "npmVersion": "1.0.0",
+    "ngVersion": "20.0.0",
+    "fileNaming": "kebab-case",
+    "generateAliasAsModel": false
+  },
+  "globalProperties": {
+    "models": "",
+    "apis": "",
+    "supportingFiles": ""
+  },
+  "templateDir": "",
+  "auth": "",
+  "systemProperties": {},
+  "configOptions": {}
+}

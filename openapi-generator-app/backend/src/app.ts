@@ -9,6 +9,21 @@ import path from 'path';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// 🎯 Función para generar nombre dinámico del cliente
+function generateDynamicClientName(filename: string): string {
+  // Extraer nombre base del archivo sin extensión
+  const baseName = path.basename(filename, path.extname(filename));
+
+  // Limpiar nombre y convertir a formato kebab-case
+  const cleanName = baseName
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return `${cleanName}-client`;
+}
+
 // Configurar multer para la carga de archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -64,7 +79,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the OpenAPI Generator App!');
 });
 
-// Endpoint para generar código desde URL
+// Endpoint para generar código desde URL - Angular 20 Dinámico
 app.post('/api/generate', (req, res) => {
   const { openapiUrl, generatorName, outputDir, additionalProperties } =
     req.body;
@@ -72,11 +87,74 @@ app.post('/api/generate', (req, res) => {
     return res.status(400).json({ error: 'Faltan parámetros requeridos.' });
   }
 
+  // 🎯 Generar nombre dinámico del cliente basado en la URL
+  const dynamicClientName = generateDynamicClientName(openapiUrl);
+
+  // ✨ Configuraciones PROFESIONALES dinámicas - Angular 20
+  const defaultProperties = {
+    // 🏗️ Configuraciones de naming limpio (como users-api)
+    modelNameSuffix: '',
+    modelNamePrefix: '',
+    removeOperationIdPrefix: true,
+
+    // 📁 Configuraciones para estructura profesional
+    modelFilenamePrefix: '',
+    modelFilenameSuffix: '',
+    apiFilenamePrefix: '',
+    apiFilenameSuffix: '',
+
+    // 🎯 Configuraciones modernas Angular 20
+    stringEnums: true,
+    supportsES6: true,
+    withInterfaces: true, // ✅ Habilitar para estructura como users-api
+    useSingleRequestParameter: false,
+    withoutPrefixEnums: true,
+
+    // 📦 Configuraciones de packaging dinámico - Angular 20
+    npmName: dynamicClientName,
+    npmVersion: '1.0.0',
+    ngVersion: '20.0.0',
+
+    // 🔤 Configuraciones de naming profesional
+    modelPropertyNaming: 'camelCase',
+    enumPropertyNaming: 'camelCase',
+    paramNaming: 'camelCase',
+
+    // 🗂️ Configuraciones para generar package.json y ng-package.json
+    generateAliasAsModel: false,
+    sortParamsByRequiredFlag: true,
+    sortModelPropertiesByRequiredFlag: true,
+
+    // 📋 Configuraciones para estructura de archivos limpia
+    fileNaming: 'kebab-case',
+    serviceSuffix: 'Service',
+    serviceFileSuffix: '.service',
+    providedIn: 'root',
+
+    // 🧹 Configuraciones avanzadas para código más limpio
+    skipFormModel: true, // ❌ Omite modelos de formulario innecesarios
+    disallowAdditionalPropertiesIfNotPresent: false,
+    ensureUniqueParams: true,
+
+    // 🚀 Configuraciones de imports limpios
+    prependFormOrBodyParameters: false,
+    legacyDiscriminatorBehavior: false,
+  };
+
+  // Combinar propiedades adicionales con las predeterminadas
+  const combinedProperties = { ...defaultProperties, ...additionalProperties };
+  const propertiesString = Object.entries(combinedProperties)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(',');
+
   // Construir el comando
   let cmd = `openapi-generator-cli generate -i "${openapiUrl}" -g "${generatorName}" -o "${outputDir}"`;
-  if (additionalProperties) {
-    cmd += ` --additional-properties="${additionalProperties}"`;
+  if (propertiesString) {
+    cmd += ` --additional-properties="${propertiesString}"`;
   }
+
+  console.log('🚀 Ejecutando comando dinámico:', cmd);
+  console.log('📦 Cliente generado:', dynamicClientName);
 
   // Ejecutar el comando
   exec(cmd, { cwd: process.cwd() }, (error, stdout, stderr) => {
@@ -85,11 +163,34 @@ app.post('/api/generate', (req, res) => {
         .status(500)
         .json({ error: stderr || error.message, output: stdout });
     }
+
+    // Ejecutar limpieza profesional automática después de la generación
+    try {
+      const {
+        cleanGeneratedFilesProfessional,
+      } = require('./clean-professional');
+      cleanGeneratedFilesProfessional();
+      console.log('✅ Limpieza profesional automática completada');
+    } catch (cleanError) {
+      console.warn('⚠️ Error en limpieza profesional automática:', cleanError);
+      // Fallback a limpieza básica
+      try {
+        const { cleanGeneratedFiles } = require('./clean-names');
+        cleanGeneratedFiles();
+        console.log('✅ Limpieza básica automática completada');
+      } catch (basicCleanError) {
+        console.warn(
+          '⚠️ Error en limpieza básica automática:',
+          basicCleanError
+        );
+      }
+    }
+
     res.json({ output: stdout });
   });
 });
 
-// Endpoint para generar código desde archivo
+// Endpoint para generar código desde archivo - Angular 20 Dinámico
 app.post(
   '/api/generate-from-file',
   upload.single('openapiFile'),
@@ -104,11 +205,78 @@ app.post(
 
     const filePath = req.file.path;
 
+    // 🎯 Generar nombre dinámico del cliente basado en el archivo
+    const dynamicClientName = generateDynamicClientName(req.file.originalname);
+
+    // ✨ Configuraciones PROFESIONALES dinámicas - Angular 20
+    const defaultProperties = {
+      // 🏗️ Configuraciones de naming limpio (como users-api)
+      modelNameSuffix: '',
+      modelNamePrefix: '',
+      removeOperationIdPrefix: true,
+
+      // 📁 Configuraciones para estructura profesional
+      modelFilenamePrefix: '',
+      modelFilenameSuffix: '',
+      apiFilenamePrefix: '',
+      apiFilenameSuffix: '',
+
+      // 🎯 Configuraciones modernas Angular 20
+      stringEnums: true,
+      supportsES6: true,
+      withInterfaces: true, // ✅ Habilitar para estructura como users-api
+      useSingleRequestParameter: false,
+      withoutPrefixEnums: true,
+
+      // 📦 Configuraciones de packaging dinámico - Angular 20
+      npmName: dynamicClientName,
+      npmVersion: '1.0.0',
+      ngVersion: '20.0.0',
+
+      // 🔤 Configuraciones de naming profesional
+      modelPropertyNaming: 'camelCase',
+      enumPropertyNaming: 'camelCase',
+      paramNaming: 'camelCase',
+
+      // 🗂️ Configuraciones para generar package.json y ng-package.json
+      generateAliasAsModel: false,
+      sortParamsByRequiredFlag: true,
+      sortModelPropertiesByRequiredFlag: true,
+
+      // 📋 Configuraciones para estructura de archivos limpia
+      fileNaming: 'kebab-case',
+      serviceSuffix: 'Service',
+      serviceFileSuffix: '.service',
+      providedIn: 'root',
+
+      // 🧹 Configuraciones avanzadas para código más limpio
+      skipFormModel: true, // ❌ Omite modelos de formulario innecesarios
+      disallowAdditionalPropertiesIfNotPresent: false,
+      ensureUniqueParams: true,
+
+      // 🚀 Configuraciones de imports limpios
+      prependFormOrBodyParameters: false,
+      legacyDiscriminatorBehavior: false,
+    };
+
+    // Combinar propiedades adicionales con las predeterminadas
+    const combinedProperties = {
+      ...defaultProperties,
+      ...additionalProperties,
+    };
+    const propertiesString = Object.entries(combinedProperties)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(',');
+
     // Construir el comando usando el archivo cargado
     let cmd = `openapi-generator-cli generate -i "${filePath}" -g "${generatorName}" -o "${outputDir}"`;
-    if (additionalProperties) {
-      cmd += ` --additional-properties="${additionalProperties}"`;
+    if (propertiesString) {
+      cmd += ` --additional-properties="${propertiesString}"`;
     }
+
+    console.log('🚀 Ejecutando comando dinámico desde archivo:', cmd);
+    console.log('📦 Cliente generado:', dynamicClientName);
+    console.log('📄 Archivo:', req.file.originalname);
 
     // Ejecutar el comando
     exec(cmd, { cwd: process.cwd() }, (error, stdout, stderr) => {
@@ -124,6 +292,32 @@ app.post(
           .status(500)
           .json({ error: stderr || error.message, output: stdout });
       }
+
+      // Ejecutar limpieza profesional automática después de la generación
+      try {
+        const {
+          cleanGeneratedFilesProfessional,
+        } = require('./clean-professional');
+        cleanGeneratedFilesProfessional();
+        console.log('✅ Limpieza profesional automática completada');
+      } catch (cleanError) {
+        console.warn(
+          '⚠️ Error en limpieza profesional automática:',
+          cleanError
+        );
+        // Fallback a limpieza básica
+        try {
+          const { cleanGeneratedFiles } = require('./clean-names');
+          cleanGeneratedFiles();
+          console.log('✅ Limpieza básica automática completada');
+        } catch (basicCleanError) {
+          console.warn(
+            '⚠️ Error en limpieza básica automática:',
+            basicCleanError
+          );
+        }
+      }
+
       res.json({ output: stdout });
     });
   }

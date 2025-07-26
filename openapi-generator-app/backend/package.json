@@ -21,6 +21,13 @@
     "start": "node dist/app.js",
     "dev": "ts-node src/app.ts",
     "build": "tsc",
-    "generate": "openapi-generator-cli generate -i <input_file> -g <generator_name> -o <output_directory>"
+    "generate": "openapi-generator-cli generate -i <input_file> -g <generator_name> -o <output_directory>",
+    "generate-dynamic": "npm run clean-professional",
+    "generate-professional": "npm run clean-professional",
+    "clean-names": "ts-node src/clean-names.ts",
+    "clean-professional": "ts-node src/clean-professional.ts",
+    "generate-clean": "npm run clean-professional",
+    "generate-clean-win": "generate-clean.bat",
+    "generate-clean-unix": "bash generate-clean.sh"
   }
 }
