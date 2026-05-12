@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: openapi-generator-backend
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./backend/generated:/app/generated
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: openapi-generator-frontend
+    depends_on:
+      - backend
+    ports:
+      - '8080:80'

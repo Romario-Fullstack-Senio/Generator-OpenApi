@@ -1,14 +1,8 @@
-import { HttpClientModule } from '@angular/common/http';
-import { importProvidersFrom } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
 
 import { AppComponent } from './app/app.component';
-import { environment } from './environments/environment';
-
-if (environment.production) {
-  // enableProdMode is not needed in newer Angular versions
-}
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(HttpClientModule)],
+  providers: [provideHttpClient()],
 }).catch((err) => console.error(err));

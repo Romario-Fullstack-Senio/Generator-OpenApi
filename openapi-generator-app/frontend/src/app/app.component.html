@@ -1,126 +1,232 @@
-<div>
-  <h1>OpenAPI Generator</h1>
-  <form (ngSubmit)="generateCode()" #genForm="ngForm">
-    <div class="input-group">
-      <label>OpenAPI Specification:</label>
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-      <div class="radio-group">
-        <input
-          type="radio"
-          id="urlOption"
-          name="inputType"
-          value="url"
-          [(ngModel)]="inputType"
-          required />
-        <label for="urlOption">URL de OpenAPI</label>
+<main id="main-content" class="page">
+  <section class="hero">
+    <p class="eyebrow">OpenAPI Pipeline</p>
+    <h1>{{ title }}</h1>
+    <p>
+      Sube tu YAML, elige cliente Angular o servidor Spring actualizado y descarga artefactos listos para CI/CD y Azure
+      Artifacts.
+    </p>
+  </section>
 
-        <input
-          type="radio"
-          id="fileOption"
-          name="inputType"
-          value="file"
-          [(ngModel)]="inputType"
-          required />
-        <label for="fileOption">Archivo local</label>
+  <section class="panel">
+    <form (ngSubmit)="generateCode()" #genForm="ngForm" novalidate>
+      <div class="grid">
+        <fieldset class="card">
+          <legend>1. Especificacion OpenAPI</legend>
+
+          <div class="radio-group">
+            <label class="radio-option" for="fileOption">
+              <input id="fileOption" type="radio" name="inputType" value="file" [(ngModel)]="inputType" required />
+              <span>Archivo local YAML/JSON</span>
+            </label>
+
+            <label class="radio-option" for="urlOption">
+              <input id="urlOption" type="radio" name="inputType" value="url" [(ngModel)]="inputType" required />
+              <span>URL OpenAPI</span>
+            </label>
+          </div>
+
+          <div *ngIf="inputType === 'file'" class="field">
+            <label for="openapiFile">Selecciona el archivo OpenAPI</label>
+            <input
+              id="openapiFile"
+              type="file"
+              name="openapiFile"
+              accept=".json,.yaml,.yml"
+              (change)="onFileSelected($event)"
+              [required]="inputType === 'file'"
+            />
+            <p class="hint" *ngIf="selectedFileName">Archivo seleccionado: {{ selectedFileName }}</p>
+          </div>
+
+          <div *ngIf="inputType === 'url'" class="field">
+            <label for="openapiUrl">URL o ruta OpenAPI</label>
+            <input
+              id="openapiUrl"
+              type="url"
+              name="openapiUrl"
+              autocomplete="off"
+              inputmode="url"
+              [(ngModel)]="openapiUrl"
+              placeholder="https://tu-dominio.com/openapi.yaml…"
+              [required]="inputType === 'url'"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend>2. Generador y Perfil</legend>
+
+          <div class="field">
+            <label for="profileId">Perfil de generacion</label>
+            <select
+              id="profileId"
+              name="profileId"
+              [(ngModel)]="selectedProfileId"
+              (ngModelChange)="onProfileChange()"
+              required
+            >
+              <option *ngFor="let profile of profiles()" [value]="profile.id">
+                {{ profile.label }}
+              </option>
+            </select>
+            <p class="hint" *ngIf="selectedProfile()">{{ selectedProfile()?.description }}</p>
+          </div>
+
+          <div class="field-row" *ngIf="isClientProfile()">
+            <div class="field">
+              <label for="npmName">npmName</label>
+              <input id="npmName" name="npmName" [(ngModel)]="npmName" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="npmVersion">npmVersion</label>
+              <input id="npmVersion" name="npmVersion" [(ngModel)]="npmVersion" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="field" *ngIf="isClientProfile()">
+            <label for="npmRepository">npmRepository (Azure Artifacts)</label>
+            <input
+              id="npmRepository"
+              name="npmRepository"
+              [(ngModel)]="npmRepository"
+              autocomplete="off"
+              placeholder="https://pkgs.dev.azure.com/ORG/PROJECT/_packaging/FEED/npm/registry/"
+            />
+          </div>
+
+          <div class="field" *ngIf="isClientProfile()">
+            <label for="ngVersion">ngVersion objetivo</label>
+            <input id="ngVersion" name="ngVersion" [(ngModel)]="ngVersion" autocomplete="off" />
+          </div>
+
+          <div *ngIf="!isClientProfile()" class="field-row">
+            <div class="field">
+              <label for="groupId">groupId</label>
+              <input id="groupId" name="groupId" [(ngModel)]="groupId" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="artifactId">artifactId</label>
+              <input id="artifactId" name="artifactId" [(ngModel)]="artifactId" autocomplete="off" />
+            </div>
+          </div>
+
+          <div *ngIf="!isClientProfile()" class="field-row">
+            <div class="field">
+              <label for="packageName">packageName</label>
+              <input id="packageName" name="packageName" [(ngModel)]="packageName" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="packageVersion">packageVersion</label>
+              <input id="packageVersion" name="packageVersion" [(ngModel)]="packageVersion" autocomplete="off" />
+            </div>
+          </div>
+
+          <div *ngIf="!isClientProfile()" class="checkbox-group">
+            <label class="checkbox-option" for="springInterfaceOnly">
+              <input
+                id="springInterfaceOnly"
+                type="checkbox"
+                name="springInterfaceOnly"
+                [(ngModel)]="springInterfaceOnly"
+              />
+              <span>interfaceOnly</span>
+            </label>
+
+            <label class="checkbox-option" for="springDelegatePattern">
+              <input
+                id="springDelegatePattern"
+                type="checkbox"
+                name="springDelegatePattern"
+                [(ngModel)]="springDelegatePattern"
+              />
+              <span>delegatePattern</span>
+            </label>
+
+            <label class="checkbox-option" for="springUseTags">
+              <input id="springUseTags" type="checkbox" name="springUseTags" [(ngModel)]="springUseTags" />
+              <span>useTags</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="card">
+          <legend>3. Salida y Overrides</legend>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="outputDir">Carpeta de salida</label>
+              <input id="outputDir" name="outputDir" [(ngModel)]="outputDir" required autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="downloadFileName">Nombre ZIP</label>
+              <input
+                id="downloadFileName"
+                name="downloadFileName"
+                [(ngModel)]="downloadFileName"
+                autocomplete="off"
+                placeholder="mi-cliente.zip"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="customPropertiesText">additional-properties extra (k=v,k2=v2)</label>
+            <textarea
+              id="customPropertiesText"
+              name="customPropertiesText"
+              rows="4"
+              [(ngModel)]="customPropertiesText"
+              placeholder="withInterfaces=true,serviceSuffix=Service…"
+            ></textarea>
+          </div>
+
+          <button class="primary" type="submit" [disabled]="genForm.invalid || isGenerating">
+            <span *ngIf="!isGenerating">Generar Codigo</span>
+            <span *ngIf="isGenerating">Generando…</span>
+          </button>
+        </fieldset>
       </div>
+    </form>
+  </section>
 
-      <div *ngIf="inputType === 'url'">
-        <label for="openapiUrl">Ruta o URL de OpenAPI:</label>
-        <input
-          type="text"
-          id="openapiUrl"
-          [(ngModel)]="openapiUrl"
-          name="openapiUrl"
-          placeholder="https://ejemplo.com/api/openapi.json"
-          [required]="inputType === 'url'" />
-      </div>
-
-      <div *ngIf="inputType === 'file'">
-        <label for="openapiFile">Seleccionar archivo OpenAPI:</label>
-        <input
-          type="file"
-          id="openapiFile"
-          (change)="onFileSelected($event)"
-          accept=".json,.yaml,.yml"
-          [required]="inputType === 'file'" />
-        <small *ngIf="selectedFileName"
-          >Archivo seleccionado: {{ selectedFileName }}</small
-        >
-      </div>
-    </div>
-
-    <label for="generatorName">Generador:</label>
-    <select
-      id="generatorName"
-      [(ngModel)]="generatorName"
-      name="generatorName"
-      (ngModelChange)="onGeneratorChange()"
-      required>
-      <option value="typescript-angular">TypeScript Angular (Cliente)</option>
-      <option value="spring">Spring Boot (Servidor)</option>
-    </select>
-
-    <label for="outputDir">Directorio de salida:</label>
-    <input
-      type="text"
-      id="outputDir"
-      [(ngModel)]="outputDir"
-      name="outputDir"
-      required />
-    <small>Se actualiza automáticamente según el generador seleccionado</small>
-
-    <label for="downloadFileName"
-      >Nombre del archivo de descarga (opcional):</label
+  <section *ngIf="isGenerating" class="status-card" aria-live="polite">
+    <div
+      class="progress-bar"
+      role="progressbar"
+      [attr.aria-valuenow]="progressPercentage"
+      aria-valuemin="0"
+      aria-valuemax="100"
     >
-    <input
-      type="text"
-      id="downloadFileName"
-      [(ngModel)]="downloadFileName"
-      name="downloadFileName"
-      placeholder="codigo-generado.zip" />
-    <small>Se sugiere automáticamente según el generador seleccionado</small>
-
-    <label for="additionalProperties">Additional Properties:</label>
-    <input
-      type="text"
-      id="additionalProperties"
-      [(ngModel)]="additionalProperties"
-      name="additionalProperties" />
-
-    <button type="submit" [disabled]="genForm.invalid || isGenerating">
-      <span *ngIf="!isGenerating">🚀 Generar Código</span>
-      <span *ngIf="isGenerating">⏳ Generando...</span>
-    </button>
-  </form>
-
-  <!-- Indicador de progreso -->
-  <div *ngIf="isGenerating" class="progress-container">
-    <div class="progress-bar">
       <div class="progress-fill" [style.width.%]="progressPercentage"></div>
     </div>
-    <div class="progress-text">
-      {{ progressMessage }}
-    </div>
-  </div>
+    <p>{{ progressMessage }}</p>
+  </section>
 
-  <div *ngIf="error" style="color: red">
-    <strong>Error:</strong> {{ error }}
-  </div>
+  <section *ngIf="error" class="status-card error" aria-live="polite">
+    <h2>Error</h2>
+    <p>{{ error }}</p>
+  </section>
 
-  <div *ngIf="generatedCode">
-    <h2>Resultado:</h2>
-    <pre>{{ generatedCode }}</pre>
+  <section *ngIf="warnings" class="status-card warning" aria-live="polite">
+    <h2>Warnings</h2>
+    <pre>{{ warnings }}</pre>
+  </section>
 
-    <div class="download-section">
-      <button
-        type="button"
-        class="download-btn"
-        (click)="downloadGeneratedFiles()"
-        [disabled]="isDownloading">
-        <span *ngIf="!isDownloading">📥 Descargar Archivos Generados</span>
-        <span *ngIf="isDownloading">⏳ Descargando...</span>
+  <section *ngIf="generatedCode" class="status-card success" aria-live="polite">
+    <div class="result-header">
+      <h2>Resultado de Generacion</h2>
+      <button type="button" class="secondary" (click)="downloadGeneratedFiles()" [disabled]="isDownloading">
+        <span *ngIf="!isDownloading">Descargar ZIP</span>
+        <span *ngIf="isDownloading">Descargando…</span>
       </button>
-      <small>Los archivos se descargarán como un archivo ZIP</small>
     </div>
-  </div>
-</div>
+    <pre>{{ generatedCode }}</pre>
+  </section>
+</main>

@@ -1,67 +1,101 @@
-# openapi-generator-app
+# OpenAPI Generator App
 
-## Descripción
+App full-stack para generar clientes y servidores desde OpenAPI sin depender de SwaggerHub.
 
-Este proyecto es una aplicación que utiliza `openapi-generator-cli` para generar código basado en especificaciones OpenAPI. La aplicación está dividida en dos partes: un backend construido con TypeScript y Express, y un frontend desarrollado con Angular.
+## Que resuelve
 
-## Estructura del Proyecto
+- Carga especificaciones OpenAPI desde archivo local (`.yaml`, `.yml`, `.json`) o URL.
+- Permite elegir perfiles modernos de generación:
+  - Cliente Angular TypeScript (Angular 20 o Angular 21)
+  - Servidor Spring Boot 3 + Jakarta
+  - Spring Interface-Only para contratos
+- Permite ajustar `additional-properties` y campos clave para publicación en Azure Artifacts.
+- Descarga resultado como ZIP desde la UI.
 
-- **backend/**: Contiene la lógica del servidor y la configuración de la API.
-  - **src/**: Código fuente del backend.
-    - **app.ts**: Punto de entrada de la aplicación backend.
-    - **types/**: Contiene definiciones de tipos utilizados en la aplicación.
-  - **package.json**: Configuración de npm para el backend.
-  - **tsconfig.json**: Configuración de TypeScript para el backend.
+## Estructura
 
-- **frontend/**: Contiene la interfaz de usuario de la aplicación.
-  - **src/**: Código fuente del frontend.
-    - **app/**: Componentes de la aplicación Angular.
-      - **app.component.ts**: Lógica del componente principal.
-      - **app.component.html**: Plantilla HTML del componente principal.
-      - **app.module.ts**: Módulo principal de la aplicación.
-    - **environments/**: Configuraciones de entorno.
-      - **environment.ts**: Configuración del entorno de desarrollo.
-      - **environment.prod.ts**: Configuración del entorno de producción.
-  - **angular.json**: Configuración del proyecto Angular.
-  - **package.json**: Configuración de npm para el frontend.
-  - **tsconfig.json**: Configuración de TypeScript para el frontend.
+- `backend/`: API Express + OpenAPI Generator CLI.
+- `frontend/`: UI Angular 20 standalone.
+- `docker-compose.yml`: despliegue conjunto backend + frontend.
 
-## Instalación
+## Perfiles incluidos
 
-Para instalar las dependencias del proyecto, navega a las carpetas `backend` y `frontend` y ejecuta:
+### Cliente Angular
+
+- Generador: `typescript-angular`
+- Propiedades clave:
+  - `ngVersion`
+  - `npmName`
+  - `npmVersion`
+  - `npmRepository` (Azure Artifacts)
+
+### Servidor Spring
+
+- Generador: `spring`
+- Propiedades clave:
+  - `useSpringBoot3=true`
+  - `useJakartaEe=true`
+  - `groupId`, `artifactId`, `packageName`, `packageVersion`
+  - `delegatePattern`, `interfaceOnly`, `useTags`
+
+## Uso local
+
+### 1) Backend
 
 ```bash
+cd backend
 npm install
+npm run dev
 ```
 
-## Ejecución
+API en `http://localhost:3001/api`.
 
-Para ejecutar el backend, utiliza el siguiente comando en la carpeta `backend`:
+### 2) Frontend
 
 ```bash
+cd frontend
+npm install
 npm start
 ```
 
-Para ejecutar el frontend, utiliza el siguiente comando en la carpeta `frontend`:
+UI en `http://localhost:4200`.
 
-```bash
-ng serve
+## Flujo recomendado
+
+1. Seleccionar tipo de entrada (archivo o URL).
+2. Elegir perfil de generación.
+3. Ajustar metadata (`npmName`, `npmRepository`, `groupId`, etc.).
+4. Ejecutar generación.
+5. Descargar ZIP generado.
+
+## Azure Artifacts (cliente npm)
+
+En el perfil Angular, define:
+
+- `npmName`: nombre del paquete.
+- `npmVersion`: versión semántica.
+- `npmRepository`: URL del feed de Azure Artifacts.
+
+Ejemplo de `npmRepository`:
+
+```text
+https://pkgs.dev.azure.com/ORG/PROJECT/_packaging/FEED/npm/registry/
 ```
 
-## Generación de Código
-
-Para generar código utilizando `openapi-generator-cli`, asegúrate de tenerlo instalado y ejecuta el siguiente comando:
+## Despliegue con Docker
 
 ```bash
-openapi-generator-cli generate -i <ruta-a-tu-especificacion-openapi> -g <lenguaje-de-salida> -o <directorio-de-salida>
+docker compose up --build
 ```
 
-Reemplaza `<ruta-a-tu-especificacion-openapi>`, `<lenguaje-de-salida>`, y `<directorio-de-salida>` con los valores correspondientes.
+- Frontend: `http://localhost:8080`
+- Backend: `http://localhost:3001`
 
-## Contribuciones
+El frontend usa Nginx con proxy para `/api` hacia el contenedor backend.
 
-Las contribuciones son bienvenidas. Si deseas contribuir, por favor abre un issue o envía un pull request.
+## GitHub Pages vs Docker
 
-## Licencia
-
-Este proyecto está bajo la licencia MIT.
+- GitHub Pages sirve solo contenido estatico (HTML/CSS/JS).
+- Este proyecto necesita backend para ejecutar OpenAPI Generator y empaquetar ZIP.
+- Por lo tanto, para la app completa se recomienda Docker (o similar en cloud).
+- GitHub Pages solo seria valido para una demo UI estatica apuntando a una API externa.
